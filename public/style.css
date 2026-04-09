@@ -46,7 +46,7 @@ body {
 .hidden { display: none !important; }
 
 /* ── Views ────────────────────────────────────────────────────── */
-.view      { display: none; width: 100%; max-width: 500px; }
+.view      { display: none; width: 100%; max-width: 1000px; }
 .view-wide { max-width: 820px; }
 .view.active { display: block; }
 
