@@ -1,4 +1,4 @@
-# Matematikafeladatok
+# Matek feladatok
 
 A math and clock-reading practice app for 2nd grade elementary school children, with a Hungarian UI. Deployable as a static site.
 
@@ -17,14 +17,7 @@ npm start
 
 ## Deployment
 
-The app is a pure static site. Deploy to Vercel in one step:
-
-```bash
-npm i -g vercel
-vercel --prod
-```
-
-`vercel.json` is already configured to serve the `public/` directory.
+The app is a pure static site deployed to Vercel. Check it out here: https://maths-practice-game.vercel.app/
 
 ## Features
 
@@ -39,8 +32,6 @@ Configure each session before starting:
 | Feladatok száma | Number of problems per session |
 | Negatív eredmény | Allow/disallow negative answers |
 | Tagok száma feladatonként | 2 terms only, or 2–3 terms per problem |
-
-Settings persist in `localStorage`.
 
 ### Operations (Műveletek)
 
