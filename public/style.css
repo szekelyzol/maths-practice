@@ -251,7 +251,7 @@ input[type="text"]:focus { border-color: var(--btn); }
   filter: drop-shadow(0 3px 8px rgba(0,0,0,.12));
 }
 
-.clock-face.interactive { cursor: crosshair; }
+.clock-face.interactive { cursor: crosshair; touch-action: none; }
 
 /* Clock read — answer inputs */
 .clock-answer-row {

@@ -527,7 +527,8 @@ function svgClickAngle(event) {
   const rect = svg.getBoundingClientRect();
   const cx   = rect.left + rect.width  / 2;
   const cy   = rect.top  + rect.height / 2;
-  let deg = Math.atan2(event.clientX - cx, -(event.clientY - cy)) * 180 / Math.PI;
+  const src  = event.touches ? event.touches[0] : event;
+  let deg = Math.atan2(src.clientX - cx, -(src.clientY - cy)) * 180 / Math.PI;
   if (deg < 0) deg += 360;
   return deg;
 }
@@ -894,6 +895,8 @@ function startDrag(target) {
   clockDragTarget = target;
   document.addEventListener('mousemove', onClockDragMove);
   document.addEventListener('mouseup',  onClockDragEnd);
+  document.addEventListener('touchmove', onClockDragMove, { passive: false });
+  document.addEventListener('touchend',  onClockDragEnd);
 }
 
 function onClockMousedown(event) {
@@ -920,6 +923,7 @@ function onClockMousedown(event) {
 
 function onClockDragMove(event) {
   if (!clockDragging) return;
+  event.preventDefault();
   const deg = svgClickAngle(event);
   if (clockDragTarget === 'minute') clockPlacedMin  = deg;
   else                              clockPlacedHour = deg;
@@ -931,6 +935,8 @@ function onClockDragEnd() {
   clockDragTarget = null;
   document.removeEventListener('mousemove', onClockDragMove);
   document.removeEventListener('mouseup',  onClockDragEnd);
+  document.removeEventListener('touchmove', onClockDragMove);
+  document.removeEventListener('touchend',  onClockDragEnd);
 }
 
 function onDisambigSelect(target) {
@@ -1094,6 +1100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Clock drag interaction (set / text modes)
   el('clock-svg').addEventListener('mousedown', onClockMousedown);
+  el('clock-svg').addEventListener('touchstart', onClockMousedown, { passive: false });
 
   // Clock action buttons
   el('clock-next-btn').addEventListener('click', onClockNextBtn);
