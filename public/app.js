@@ -544,7 +544,10 @@ function showProblem() {
   attempts  = 0;
 
   const isClock = p.type.startsWith('clk-');
-  const cardSuffix = isClock ? ' op-clk' : p.type === 'rel' ? ' op-rel' : '';
+  const cardSuffix = isClock ? ' op-clk'
+    : p.type === 'rel'  ? ' op-rel'
+    : p.type === 'math' ? ` op-${p.dom}`
+    : '';
   el('problem-card').className = `card problem-card${cardSuffix}`;
   el('prog-fill').style.width  = (idx / problems.length * 100) + '%';
   el('prog-label').textContent = `${idx + 1} / ${problems.length}`;

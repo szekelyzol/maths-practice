@@ -173,6 +173,7 @@ input[type="text"]:focus { border-color: var(--btn); }
 .problem-card.op-add { background: var(--add-bg); border-color: var(--add-bd); }
 .problem-card.op-sub { background: var(--sub-bg); border-color: var(--sub-bd); }
 .problem-card.op-mul { background: var(--mul-bg); border-color: var(--mul-bd); }
+.problem-card.op-div { background: var(--div-bg); border-color: var(--div-bd); }
 .problem-card.op-mix { background: var(--mix-bg); border-color: var(--mix-bd); }
 .problem-card.op-clk { background: var(--clk-bg); border-color: var(--clk-bd); }
 .problem-card.op-rel { background: var(--rel-bg); border-color: var(--rel-bd); }
