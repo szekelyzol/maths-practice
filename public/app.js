@@ -125,9 +125,8 @@ function generateTimeText(hour, minute) {
   } else if (minute <= 7) {
     const n = minute;
     variants = [
+      `${huH(hour)} óra múlt ${huM(n)} perccel`,
       `${huH(hour)} óra ${huM(n)} perc`,
-      `${huM(n)} perccel múlt ${huH(hour)}`,
-      `${huM(n)} perc múlt ${huH(hour)} órán`,
     ];
   } else if (minute <= 14) {
     const n = 15 - minute;
@@ -141,9 +140,7 @@ function generateTimeText(hour, minute) {
   } else if (minute <= 22) {
     const n = minute - 15;
     variants = [
-      `negyed ${huH(nh)} elmúlt ${huM(n)} perccel`,
-      `${huM(n)} perccel elmúlt a negyed ${huH(nh)}`,
-      `negyed ${huH(nh)} után ${huM(n)} perccel`,
+      `negyed ${huH(nh)} múlt ${huM(n)} perccel`,
     ];
   } else if (minute <= 29) {
     const n = 30 - minute;
@@ -157,9 +154,7 @@ function generateTimeText(hour, minute) {
   } else if (minute <= 37) {
     const n = minute - 30;
     variants = [
-      `fél ${huH(nh)} elmúlt ${huM(n)} perccel`,
-      `${huM(n)} perccel elmúlt a fél ${huH(nh)}`,
-      `fél ${huH(nh)} után ${huM(n)} perccel`,
+      `fél ${huH(nh)} múlt ${huM(n)} perccel`,
     ];
   } else if (minute <= 44) {
     const n = 45 - minute;
@@ -173,9 +168,7 @@ function generateTimeText(hour, minute) {
   } else if (minute <= 52) {
     const n = minute - 45;
     variants = [
-      `háromnegyed ${huH(nh)} elmúlt ${huM(n)} perccel`,
-      `${huM(n)} perccel elmúlt a háromnegyed ${huH(nh)}`,
-      `háromnegyed ${huH(nh)} után ${huM(n)} perccel`,
+      `háromnegyed ${huH(nh)} múlt ${huM(n)} perccel`,
     ];
   } else {
     const n = 60 - minute;
