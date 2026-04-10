@@ -53,7 +53,7 @@ Configure each session before starting:
 
 **Clock interaction (Óra beállítás / Óra szöveg):**
 
-Both hands start pre-placed at 13:00. Drag either hand to the correct position, then press **Kész ✓**. If the hands overlap, an inline prompt asks which one to grab.
+Both hands start pre-placed at 13:00. Drag either hand to the correct position, then press **Kész ✓**. The hands are linked like a real clock — dragging the minute hand moves the hour hand at 1/12 speed, and vice versa. When hands overlap, the minute hand is grabbed by default.
 
 Tolerances: minute hand ±5°, hour hand ±10°
 
