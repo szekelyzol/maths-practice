@@ -13,8 +13,9 @@ let sessionResults = [];
 let clockPhase      = null;
 let clockPlacedMin  = null;   // placed minute-hand angle in degrees
 let clockPlacedHour = null;   // placed hour-hand angle in degrees
-let clockDragging   = false;
-let clockDragTarget = null;   // 'minute' | 'hour'
+let clockDragging    = false;
+let clockDragTarget  = null;   // 'minute' | 'hour'
+let clockDragPrevDeg = null;   // angle at previous frame
 
 // ── Audio ──────────────────────────────────────────────────────────
 let actx = null;
@@ -552,7 +553,7 @@ function showProblem() {
     show('clock-answer');
     hide('clock-text-desc');
     hide('clock-step-hint');
-    hide('clock-disambig');
+
     hide('clock-actions');
     hide('math-mode');
     hide('math-answer');
@@ -575,7 +576,7 @@ function showProblem() {
     show('clock-mode');
     show('clock-step-hint');
     hide('clock-answer');
-    hide('clock-disambig');
+
     hide('clock-actions');
     hide('math-mode');
     hide('math-answer');
@@ -883,8 +884,9 @@ const HAND_GRAB_DEG = 20;
 
 
 function startDrag(target) {
-  clockDragging   = true;
-  clockDragTarget = target;
+  clockDragging    = true;
+  clockDragTarget  = target;
+  clockDragPrevDeg = null;
   document.addEventListener('mousemove', onClockDragMove);
   document.addEventListener('mouseup',  onClockDragEnd);
 }
@@ -897,15 +899,12 @@ function onClockMousedown(event) {
   event.preventDefault();
 
   const deg = svgClickAngle(event);
-  hide('clock-disambig');
 
   const nearMin  = angleDiff(deg, clockPlacedMin)  <= HAND_GRAB_DEG;
   const nearHour = angleDiff(deg, clockPlacedHour) <= HAND_GRAB_DEG;
 
-  if (nearMin && nearHour) {
-    show('clock-disambig');
-  } else if (nearMin) {
-    startDrag('minute');
+  if (nearMin) {
+    startDrag('minute');  // minute takes priority when arms overlap
   } else if (nearHour) {
     startDrag('hour');
   }
@@ -914,8 +913,25 @@ function onClockMousedown(event) {
 function onClockDragMove(event) {
   if (!clockDragging) return;
   const deg = svgClickAngle(event);
-  if (clockDragTarget === 'minute') clockPlacedMin  = deg;
-  else                              clockPlacedHour = deg;
+
+  if (clockDragPrevDeg === null) {
+    clockDragPrevDeg = deg;
+    return;
+  }
+
+  // Shortest-path delta between frames — handles 0°/360° wrap cleanly
+  let delta = deg - clockDragPrevDeg;
+  if (delta >  180) delta -= 360;
+  if (delta < -180) delta += 360;
+  clockDragPrevDeg = deg;
+
+  if (clockDragTarget === 'minute') {
+    clockPlacedMin  = (clockPlacedMin  + delta      + 360) % 360;
+    clockPlacedHour = (clockPlacedHour + delta / 12 + 360) % 360;
+  } else {
+    clockPlacedHour = (clockPlacedHour + delta       + 360) % 360;
+    clockPlacedMin  = (clockPlacedMin  + delta * 12  + 360) % 360;
+  }
   renderClock(clockPlacedMin, clockPlacedHour);
 }
 
@@ -926,10 +942,6 @@ function onClockDragEnd() {
   document.removeEventListener('mouseup',  onClockDragEnd);
 }
 
-function onDisambigSelect(target) {
-  hide('clock-disambig');
-  startDrag(target);
-}
 
 function onClockNextBtn() { /* no-op: Következő button is hidden in new flow */ }
 
@@ -1091,8 +1103,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Clock action buttons
   el('clock-next-btn').addEventListener('click', onClockNextBtn);
   el('clock-confirm-btn').addEventListener('click', checkClockHandsAnswer);
-  el('disambig-min-btn').addEventListener('click', () => onDisambigSelect('minute'));
-  el('disambig-hour-btn').addEventListener('click', () => onDisambigSelect('hour'));
 
   document.querySelectorAll('.op-toggle input[type="checkbox"]').forEach(cb => {
     cb.addEventListener('change', syncToggleOpacity);
