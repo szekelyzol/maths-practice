@@ -569,12 +569,12 @@ function showProblem() {
     el('clock-prompt').textContent = 'Mit mutat az óra?';
     renderClock(p.minute * 6, (p.hour % 12) * 30 + p.minute * 0.5);
 
-    el('am-input').value           = '';
-    el('pm-input').value           = '';
-    el('am-input').disabled        = false;
-    el('pm-input').disabled        = false;
+    clearSplitTime('am-h', 'am-m');
+    clearSplitTime('pm-h', 'pm-m');
+    disableSplitTime('am-h', 'am-m', false);
+    disableSplitTime('pm-h', 'pm-m', false);
     el('clock-check-btn').disabled = false;
-    el('am-input').focus();
+    el('am-h').focus();
 
   } else if (p.type === 'clk-set' || p.type === 'clk-text') {
     show('clock-mode');
@@ -768,47 +768,54 @@ function checkAnswer() {
 }
 
 // ── Answer checking — clock read (type the time) ──────────────────
-function parseTime(str) {
-  const m = str.trim().match(/^(\d{1,2}):(\d{1,2})$/);
-  if (!m) return null;
-  const h   = parseInt(m[1], 10);
-  const min = parseInt(m[2], 10);
-  if (h < 0 || h > 23 || min < 0 || min > 59) return null;
+function readSplitTime(hId, mId) {
+  const hVal = el(hId).value.trim();
+  const mVal = el(mId).value.trim();
+  if (hVal === '' || mVal === '') return null;
+  const h   = parseInt(hVal, 10);
+  const min = parseInt(mVal, 10);
+  if (isNaN(h) || isNaN(min) || h < 0 || h > 23 || min < 0 || min > 59) return null;
   return { h, min };
+}
+
+function clearSplitTime(hId, mId) {
+  el(hId).value = '';
+  el(mId).value = '';
+}
+
+function disableSplitTime(hId, mId, disabled) {
+  el(hId).disabled = disabled;
+  el(mId).disabled = disabled;
 }
 
 function checkClockAnswer() {
   const p = problems[idx];
-  const amStr = el('am-input').value.trim();
-  const pmStr = el('pm-input').value.trim();
 
-  if (!amStr && !pmStr) return;
-  if (!amStr || !pmStr) {
-    el('feedback-msg').textContent = 'Töltsd ki mindkét mezőt!';
-    return;
-  }
+  const am = readSplitTime('am-h', 'am-m');
+  const pm = readSplitTime('pm-h', 'pm-m');
 
-  const am = parseTime(amStr);
-  const pm = parseTime(pmStr);
+  if (!am && !pm) return;
   if (!am || !pm) {
-    el('feedback-msg').textContent = 'Ilyen formátumot használj: 8:16 és 20:16';
+    el('feedback-msg').textContent = 'Töltsd ki mindkét időpontot!';
     return;
   }
 
   const amOk = am.h === p.hour      && am.min === p.minute;
   const pmOk = pm.h === p.hour + 12 && pm.min === p.minute;
 
+  const amStr = `${am.h}:${String(am.min).padStart(2,'0')}`;
+  const pmStr = `${pm.h}:${String(pm.min).padStart(2,'0')}`;
+
   attempts++;
 
   if (amOk && pmOk) {
     el('feedback-msg').textContent = 'Helyes! 🎉';
-    el('am-input').disabled        = true;
-    el('pm-input').disabled        = true;
+    disableSplitTime('am-h', 'am-m', true);
+    disableSplitTime('pm-h', 'pm-m', true);
     el('clock-check-btn').disabled = true;
     playFanfare();
     launchConfetti();
-    const userStr = `${amStr} / ${pmStr}`;
-    sessionResults.push({ problem: p, userAns: userStr, attempts, correct: true });
+    sessionResults.push({ problem: p, userAns: `${amStr} / ${pmStr}`, attempts, correct: true });
     setTimeout(nextProblem, 1800);
   } else {
     triesLeft--;
@@ -819,27 +826,26 @@ function checkClockAnswer() {
     if (triesLeft === 0) {
       el('feedback-msg').textContent =
         `A helyes időpont: ${p.amAnswer} és ${p.pmAnswer}.`;
-      el('am-input').disabled        = true;
-      el('pm-input').disabled        = true;
+      disableSplitTime('am-h', 'am-m', true);
+      disableSplitTime('pm-h', 'pm-m', true);
       el('clock-check-btn').disabled = true;
-      const userStr = `${amStr} / ${pmStr}`;
-      sessionResults.push({ problem: p, userAns: userStr, attempts, correct: false });
+      sessionResults.push({ problem: p, userAns: `${amStr} / ${pmStr}`, attempts, correct: false });
       setTimeout(nextProblem, 2600);
     } else {
       let msg = '';
       if (!amOk && !pmOk) {
         msg = 'Mindkettő helytelen.';
-        el('am-input').value = '';
-        el('pm-input').value = '';
-        el('am-input').focus();
+        clearSplitTime('am-h', 'am-m');
+        clearSplitTime('pm-h', 'pm-m');
+        el('am-h').focus();
       } else if (!amOk) {
         msg = 'A délelőtti idő helytelen.';
-        el('am-input').value = '';
-        el('am-input').focus();
+        clearSplitTime('am-h', 'am-m');
+        el('am-h').focus();
       } else {
         msg = 'A délutáni idő helytelen.';
-        el('pm-input').value = '';
-        el('pm-input').focus();
+        clearSplitTime('pm-h', 'pm-m');
+        el('pm-h').focus();
       }
       el('feedback-msg').textContent = `${msg} Még ${triesLeft} próba.`;
     }
@@ -1085,15 +1091,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') checkAnswer();
   });
 
-  // Enter key shortcuts (clock read)
-  el('am-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      if (!el('pm-input').value) el('pm-input').focus();
-      else checkClockAnswer();
-    }
+  // Clock read: auto-advance + Enter key
+  el('am-h').addEventListener('input', () => {
+    if (el('am-h').value.length >= 2) el('am-m').focus();
   });
-  el('pm-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkClockAnswer();
+  el('am-m').addEventListener('input', () => {
+    if (el('am-m').value.length >= 2) el('pm-h').focus();
+  });
+  el('pm-h').addEventListener('input', () => {
+    if (el('pm-h').value.length >= 2) el('pm-m').focus();
+  });
+  el('pm-m').addEventListener('input', () => {
+    if (el('pm-m').value.length >= 2) checkClockAnswer();
+  });
+  ['am-h','am-m','pm-h','pm-m'].forEach(id => {
+    el(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkClockAnswer();
+    });
   });
 
   // Relation buttons

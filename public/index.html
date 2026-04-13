@@ -174,11 +174,19 @@
         <div class="time-inputs">
           <div class="time-input-group">
             <label class="time-label">Délelőtt</label>
-            <input type="text" id="am-input" placeholder="8:16" autocomplete="off" inputmode="numeric">
+            <div class="time-split">
+              <input type="number" id="am-h" placeholder="8" min="0" max="23" autocomplete="off" inputmode="numeric">
+              <span class="time-colon">:</span>
+              <input type="number" id="am-m" placeholder="00" min="0" max="59" autocomplete="off" inputmode="numeric">
+            </div>
           </div>
           <div class="time-input-group">
             <label class="time-label">Délután</label>
-            <input type="text" id="pm-input" placeholder="20:16" autocomplete="off" inputmode="numeric">
+            <div class="time-split">
+              <input type="number" id="pm-h" placeholder="20" min="0" max="23" autocomplete="off" inputmode="numeric">
+              <span class="time-colon">:</span>
+              <input type="number" id="pm-m" placeholder="00" min="0" max="59" autocomplete="off" inputmode="numeric">
+            </div>
           </div>
         </div>
         <button class="btn btn-check" id="clock-check-btn">Ellenőrzés ✓</button>

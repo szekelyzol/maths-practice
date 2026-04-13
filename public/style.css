@@ -286,14 +286,33 @@ input[type="text"]:focus { border-color: var(--btn); }
   color: rgba(0,0,0,.45);
 }
 
-.time-input-group input[type="text"] {
-  width: 96px;
+.time-split {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.time-colon {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #555;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.time-split input[type="number"] {
+  width: 54px;
   font-size: 1.4rem;
   font-weight: 700;
   text-align: center;
-  padding: 12px 10px;
+  padding: 12px 6px;
   font-variant-numeric: tabular-nums;
-  letter-spacing: .03em;
+  -moz-appearance: textfield;
+}
+.time-split input[type="number"]::-webkit-inner-spin-button,
+.time-split input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .clock-answer-row .btn-check {
