@@ -58,7 +58,8 @@ body {
   box-shadow: var(--shadow);
 }
 
-h1 { font-size: 2rem; text-align: center; margin-bottom: 30px; letter-spacing: -.01em; }
+h1 { font-size: 2rem; text-align: center; margin-bottom: 8px; letter-spacing: -.01em; }
+.app-intro { text-align: center; color: var(--muted); font-size: .95rem; margin: 0 0 30px; }
 h2 { font-size: 1.35rem; margin-bottom: 14px; letter-spacing: -.01em; }
 
 .section-title    { margin-bottom: 4px; }
