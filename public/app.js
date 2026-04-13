@@ -1072,6 +1072,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSettings();
 
   el('start-btn').addEventListener('click', startSession);
+  el('exit-btn').addEventListener('click', () => showView('setup'));
   el('check-btn').addEventListener('click', checkAnswer);
   el('clock-check-btn').addEventListener('click', checkClockAnswer);
   el('new-session-btn').addEventListener('click', () => showView('setup'));

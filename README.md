@@ -23,14 +23,30 @@ The app is a pure static site deployed to Vercel. Check it out here: https://mat
 
 ### Setup screen (Beállítások)
 
-Configure each session before starting:
+The setup screen is split into two sections:
+
+**Feladat választás** — choose which problem types appear in a session:
+
+| Toggle | Description |
+|---|---|
+| + Összeadás | Addition |
+| − Kivonás | Subtraction |
+| × Szorzás | Multiplication |
+| ÷ Osztás | Division |
+| ⚖ Reláció | Relation |
+| 🕐 Óra olvasás | Clock reading |
+| 🕐 Óra beállítás | Clock setting |
+| 🕐 Óra szövegesen | Clock from text |
+
+**Beállítások** — numeric configuration:
 
 | Setting | Description |
 |---|---|
 | Számtartomány | Min/max number range for +/− operands |
+| Legnagyobb végeredmény | Maximum answer value for + and × problems |
 | Szorzótábla – legfeljebb | Max value for × and ÷ operands |
 | Feladatok száma | Number of problems per session |
-| Negatív eredmény | Allow/disallow negative answers |
+| Negatív végeredmény | Allow/disallow negative answers |
 | Tagok száma feladatonként | 2 terms only, or 2–3 terms per problem |
 
 ### Operations (Műveletek)
@@ -47,7 +63,7 @@ Configure each session before starting:
 
 | Mode | Description |
 |---|---|
-| Óra olvasás | Clock face with hands shown — user types the time (HH:MM) |
+| Óra olvasás | Clock face with hands shown — user types the time using split hour/minute fields |
 | Óra beállítás | Digital time shown — user drags clock hands to match |
 | Óra szöveg | Hungarian text description (e.g. *"fél három előtt két perccel"*) — user drags clock hands to match |
 
@@ -60,6 +76,7 @@ Tolerances: minute hand ±5°, hour hand ±10°
 ### Practice screen (Gyakorlás)
 
 - One problem at a time, progress bar + counter (e.g. "3 / 10")
+- **← Kilépés** button in the top-left returns to the setup screen at any time
 - **2 tries** per problem (shown as 2 dot indicators)
 - Wrong answer: sad trombone sound (Web Audio API) + card shake animation
 - Correct answer: ascending fanfare + canvas confetti explosion
