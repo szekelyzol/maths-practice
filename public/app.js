@@ -274,12 +274,12 @@ function tryOneMathProblem(mathOps) {
 }
 
 function makeMathProblem(mathOps) {
-  // If negative results are disabled, retry until we get a non-negative answer.
-  // Cap at 50 attempts to avoid any infinite loop edge-case.
-  if (settings.allowNegative) return tryOneMathProblem(mathOps);
+  // Retry until both constraints are satisfied; cap at 50 attempts.
   for (let i = 0; i < 50; i++) {
     const p = tryOneMathProblem(mathOps);
-    if (p.answer >= 0) return p;
+    if (!settings.allowNegative && p.answer < 0) continue;
+    if (p.answer > settings.maxResult) continue;
+    return p;
   }
   return tryOneMathProblem(mathOps);
 }
@@ -371,6 +371,7 @@ function saveSettings() {
   localStorage.setItem('mathSettings', JSON.stringify({
     minNumber:     settings.minNumber,
     maxNumber:     settings.maxNumber,
+    maxResult:     settings.maxResult,
     timesTableMax: settings.timesTableMax,
     numProblems:   settings.numProblems,
     operations:    settings.operations,
@@ -385,6 +386,7 @@ function loadSettings() {
     if (!s) return;
     if (s.minNumber     !== undefined) el('min-number').value = s.minNumber;
     if (s.maxNumber     !== undefined) el('max-number').value = s.maxNumber;
+    if (s.maxResult     !== undefined) el('max-result').value = s.maxResult;
     if (s.timesTableMax !== undefined) el('times-table-max').value = s.timesTableMax;
     if (s.numProblems   !== undefined) el('num-problems').value = s.numProblems;
     if (s.operations) {
@@ -434,14 +436,16 @@ function startSession() {
 
   const rawMin = parseInt(el('min-number').value,      10);
   const rawMax = parseInt(el('max-number').value,      10);
+  const rawRes = parseInt(el('max-result').value,      10);
   const rawTT  = parseInt(el('times-table-max').value, 10);
   const rawN   = parseInt(el('num-problems').value,    10);
   const rawMC  = parseInt(document.querySelector('input[name="max-clauses"]:checked').value, 10);
 
   settings = {
-    minNumber:     Math.max(0,   isNaN(rawMin) ? 0  : rawMin),
-    maxNumber:     Math.max(1,   isNaN(rawMax) ? 70 : rawMax),
-    timesTableMax: Math.max(1,   isNaN(rawTT)  ? 10 : rawTT),
+    minNumber:     Math.max(0,   isNaN(rawMin) ? 0   : rawMin),
+    maxNumber:     Math.max(1,   isNaN(rawMax) ? 70  : rawMax),
+    maxResult:     Math.max(1,   isNaN(rawRes) ? 100 : rawRes),
+    timesTableMax: Math.max(1,   isNaN(rawTT)  ? 10  : rawTT),
     numProblems:   Math.min(100, Math.max(1, isNaN(rawN) ? 10 : rawN)),
     operations:    ops,
     maxClauses:    rawMC || 2,
@@ -590,7 +594,7 @@ function showProblem() {
     } else {
       hide('clock-text-desc');
       show('clock-prompt');
-      el('clock-prompt').textContent = `Mutasd be: ${p.amAnswer} / ${p.pmAnswer}`;
+      el('clock-prompt').textContent = `Állítsd be: ${p.amAnswer} / ${p.pmAnswer}`;
     }
 
     // Pre-place both hands at 13:00 (hour hand at 30°, minute hand at 0°)
